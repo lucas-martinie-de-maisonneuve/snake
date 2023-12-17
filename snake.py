@@ -432,6 +432,9 @@ def main():
     left = False 
     down = False
     up = False    
+    w_k = 40
+    h_k = 580
+    
     while menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -474,41 +477,51 @@ def main():
             Fenetre.blit(texte_titre, texte_titre_rect)
 
         TextContinue = pygame.font.SysFont(None, 50, italic=True, bold=True).render(
-            "Appuyer sur 'Entrer' pour continuer", True, (128, 139, 150))
+            "Appuyer sur 'Enter' pour continuer", True, (128, 139, 150))
         Continue_rect = TextContinue.get_rect(center=(W // 2, H // 2 + 100))
         Fenetre.blit(TextContinue, Continue_rect)
 
         key_ret = pygame.image.load("img/touche/key_return.png")
         Fenetre.blit(key_ret, (625, 580))        
-
-        if right :
-            key_r = pygame.image.load("img/touche/key_right_pressed.png")
-            key_r = pygame.transform.scale(key_r, (60, 60))
-            Fenetre.blit(key_r, (150, 635))
-        else: 
-            key_r = pygame.image.load("img/touche/key_right.png")
-            Fenetre.blit(key_r, (150, 640))
-        if left:
-            key_l = pygame.image.load("img/touche/key_left_pressed.png")
-            key_l = pygame.transform.scale(key_l, (60, 60))
-            Fenetre.blit(key_l, (40, 635))
-        else:
-            key_l = pygame.image.load("img/touche/key_left.png")
-            Fenetre.blit(key_l, (50, 640))
-        if down:
-            key_d = pygame.image.load("img/touche/key_down_pressed.png")
-            key_d = pygame.transform.scale(key_d, (60, 60))
-            Fenetre.blit(key_d, (95, 640))
-        else:
-            key_d = pygame.image.load("img/touche/key_down.png")
-            Fenetre.blit(key_d, (100, 640))
-        if up:
-            key_u = pygame.image.load("img/touche/key_up_pressed.png")
-            key_u = pygame.transform.scale(key_u, (60, 60))
-            Fenetre.blit(key_u, (95, 580))
-        else:
-            key_u = pygame.image.load("img/touche/key_up.png")
-            Fenetre.blit(key_u, (100, 590))
+        banane(right, left, down, up, w_k, h_k)
+       
         pygame.display.update()
 
+def banane(right, left, down, up, w_k, h_k):
+    if right:
+        key_r = pygame.image.load("img/touche/key_right_pressed.png")
+        key_r = pygame.transform.scale(key_r, (60, 60))
+        Fenetre.blit(key_r, (w_k + 110, h_k + 65))
+    else:
+        key_r = pygame.image.load("img/touche/key_right.png")
+        Fenetre.blit(key_r, (w_k + 110, h_k + 60))
+
+    if left:
+        key_l = pygame.image.load("img/touche/key_left_pressed.png")
+        key_l = pygame.transform.scale(key_l, (60, 60))
+        Fenetre.blit(key_l, (w_k, h_k + 65))
+    else:
+        key_l = pygame.image.load("img/touche/key_left.png")
+        Fenetre.blit(key_l, (w_k + 10, h_k + 60))
+
+    if down:
+        key_d = pygame.image.load("img/touche/key_down_pressed.png")
+        key_d = pygame.transform.scale(key_d, (60, 60))
+        Fenetre.blit(key_d, (w_k + 55, h_k + 60))
+    else:
+        key_d = pygame.image.load("img/touche/key_down.png")
+        Fenetre.blit(key_d, (w_k + 60, h_k + 60))
+
+    if up:
+        key_u = pygame.image.load("img/touche/key_up_pressed.png")
+        key_u = pygame.transform.scale(key_u, (60, 60))
+        Fenetre.blit(key_u, (w_k + 55, h_k))
+    else:
+        key_u = pygame.image.load("img/touche/key_up.png")
+        Fenetre.blit(key_u, (w_k + 60, h_k + 10))
+
+    return key_r, key_l, key_d, key_u
+
 main()
+
+
