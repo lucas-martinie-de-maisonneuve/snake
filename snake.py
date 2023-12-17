@@ -6,7 +6,7 @@ pygame.init()
 red = (255, 0, 0)
 W, H = 800, 700
 Fenetre = pygame.display.set_mode((W, H))
-pygame.display.set_caption('Snake')
+pygame.display.set_caption('Snake by Lucas Martinie')
 
 pause = False
 game_over = False
@@ -51,37 +51,41 @@ def play():
                         angle_a = -90
                     elif y_change > 0:
                         angle_a = 180
-                    x_change = -20
-                    y_change = 0
-                    angle = 0
-                    add_turning_position(x, y, angle_a, turning_positions)
+                    if x_change != -20:
+                        x_change = -20
+                        y_change = 0
+                        angle = 0
+                        add_turning_position(x, y, angle_a, turning_positions)
                 elif event.key == pygame.K_RIGHT:
                     if y_change < 0:
                         angle_a = 0
                     elif y_change > 0:
                         angle_a = 90
-                    x_change = 20
-                    y_change = 0
-                    angle = 180
-                    add_turning_position(x, y, angle_a, turning_positions)
+                    if x_change != 20:
+                        x_change = 20
+                        y_change = 0
+                        angle = 180
+                        add_turning_position(x, y, angle_a, turning_positions)
                 elif event.key == pygame.K_UP:
                     if x_change < 0:
                         angle_a = 90
                     elif x_change > 0:
                         angle_a = 180
-                    y_change = -20
-                    x_change = 0
-                    angle = 270
-                    add_turning_position(x, y, angle_a, turning_positions)
+                    if y_change != -20:
+                        y_change = -20
+                        x_change = 0
+                        angle = 270
+                        add_turning_position(x, y, angle_a, turning_positions)
                 elif event.key == pygame.K_DOWN:
                     if x_change < 0:
                         angle_a = 0
                     elif x_change > 0:
                         angle_a = 270
-                    y_change = 20
-                    x_change = 0
-                    angle = 90
-                    add_turning_position(x, y, angle_a, turning_positions)
+                    if y_change != 20:
+                        y_change = 20
+                        x_change = 0
+                        angle = 90
+                        add_turning_position(x, y, angle_a, turning_positions)
 
                 elif event.key == pygame.K_SPACE:
                     paused()                    
@@ -124,19 +128,27 @@ def play():
                 head_a = pygame.transform.rotate(head, angle)
                 Fenetre.blit(head_a, segment)
             elif i == 0:
-                if (segment[0], segment[1]) in [pos for pos, _ in turning_positions]:
-                    turning_body = pygame.image.load(f"img/{color}/body_turn.png")
-                    turning_body_a = pygame.transform.rotate(turning_body, angle_a)
-                    Fenetre.blit(turning_body_a, segment)
+                position_actu = (segment[0], segment[1])
+                
+                for pos, angle_a in turning_positions:
+                    if position_actu == pos:
+                        turning_body = pygame.image.load(f"img/{color}/body_turn.png")
+                        turning_body_a = pygame.transform.rotate(turning_body, angle_a)
+                        Fenetre.blit(turning_body_a, segment)
+                        break
                 else:
                     tail = pygame.image.load(f"img/{color}/tail.png")
                     tail_a = pygame.transform.rotate(tail, direction)
                     Fenetre.blit(tail_a, segment)
+
             else:
-                if (segment[0], segment[1]) in [pos for pos, _ in turning_positions]:
-                    turning_body = pygame.image.load(f"img/{color}/body_turn.png")
-                    turning_body_a = pygame.transform.rotate(turning_body, angle_a)
-                    Fenetre.blit(turning_body_a, segment)
+                position_actu = (segment[0], segment[1])
+                for pos, angle_a in turning_positions:
+                    if position_actu == pos:
+                        turning_body = pygame.image.load(f"img/{color}/body_turn.png")
+                        turning_body_a = pygame.transform.rotate(turning_body, angle_a)
+                        Fenetre.blit(turning_body_a, segment)
+                        break
                 else:
                     body = pygame.image.load(f"img/{color}/body.png")
                     body_a = pygame.transform.rotate(body, direction)
@@ -262,7 +274,7 @@ def username():
         TextContinue = pygame.font.SysFont(None, 50, italic=True, bold=True).render("Appuyer sur 'Entrer' pour lancer la partie", True, (128, 139, 150))
         Continue_rect = TextContinue.get_rect(center=(W // 2, H // 2 + 200))
         Fenetre.blit(TextContinue, Continue_rect)
-        pygame.display.flip()
+        pygame.display.update()
 
 def choose_snake():
     c = 1
@@ -385,14 +397,14 @@ def choose_snake():
         if right :
             key_r = pygame.image.load("img/touche/key_right_pressed.png")
             key_r = pygame.transform.scale(key_r, (60, 60))
-            Fenetre.blit(key_r, (145, 635))
+            Fenetre.blit(key_r, (150, 635))
         else: 
             key_r = pygame.image.load("img/touche/key_right.png")
             Fenetre.blit(key_r, (150, 640))
         if left:
             key_l = pygame.image.load("img/touche/key_left_pressed.png")
             key_l = pygame.transform.scale(key_l, (60, 60))
-            Fenetre.blit(key_l, (45, 635))
+            Fenetre.blit(key_l, (40, 635))
         else:
             key_l = pygame.image.load("img/touche/key_left.png")
             Fenetre.blit(key_l, (50, 640))
@@ -412,5 +424,91 @@ def choose_snake():
             Fenetre.blit(key_u, (100, 590))
         pygame.display.update()
 
+def main():
+    menu = True
+    titre_charge = True
+    titre_index = 0
+    right = False
+    left = False 
+    down = False
+    up = False    
+    while menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    username()
+                    menu = False
+                elif event.key == pygame.K_RIGHT:
+                    right = True
+                elif event.key == pygame.K_LEFT:
+                    left = True
+                elif event.key == pygame.K_DOWN:
+                    down = True
+                elif event.key == pygame.K_UP:
+                    up = True
+            elif event.type == pygame.KEYUP:
+                    right = False
+                    left = False 
+                    down = False
+                    up = False
 
-username()
+        Fenetre.fill((39, 55, 70))
+        titre = "Snake"
+
+        if titre_charge:
+            pygame.time.delay(200)
+            texte_titre = pygame.font.SysFont('Calibri', 90, bold=True).render(titre[:titre_index], True, (0, 0, 0))
+            texte_titre_rect = texte_titre.get_rect(center=(W//2, 100))
+            Fenetre.blit(texte_titre, texte_titre_rect)
+            pygame.display.flip()
+            titre_index += 1
+
+            if titre_index > len(titre):
+                titre_charge = False
+        else:
+            texte_titre = pygame.font.SysFont('Calibri', 90, bold=True).render(titre, True, (0, 0, 0))
+            texte_titre_rect = texte_titre.get_rect(center=(W//2, 100))
+            Fenetre.blit(texte_titre, texte_titre_rect)
+
+        TextContinue = pygame.font.SysFont(None, 50, italic=True, bold=True).render(
+            "Appuyer sur 'Enter' pour continuer", True, (128, 139, 150))
+        Continue_rect = TextContinue.get_rect(center=(W // 2, H // 2 + 100))
+        Fenetre.blit(TextContinue, Continue_rect)
+
+        key_ret = pygame.image.load("img/touche/key_return.png")
+        Fenetre.blit(key_ret, (625, 580))        
+
+        if right :
+            key_r = pygame.image.load("img/touche/key_right_pressed.png")
+            key_r = pygame.transform.scale(key_r, (60, 60))
+            Fenetre.blit(key_r, (150, 635))
+        else: 
+            key_r = pygame.image.load("img/touche/key_right.png")
+            Fenetre.blit(key_r, (150, 640))
+        if left:
+            key_l = pygame.image.load("img/touche/key_left_pressed.png")
+            key_l = pygame.transform.scale(key_l, (60, 60))
+            Fenetre.blit(key_l, (40, 635))
+        else:
+            key_l = pygame.image.load("img/touche/key_left.png")
+            Fenetre.blit(key_l, (50, 640))
+        if down:
+            key_d = pygame.image.load("img/touche/key_down_pressed.png")
+            key_d = pygame.transform.scale(key_d, (60, 60))
+            Fenetre.blit(key_d, (95, 640))
+        else:
+            key_d = pygame.image.load("img/touche/key_down.png")
+            Fenetre.blit(key_d, (100, 640))
+        if up:
+            key_u = pygame.image.load("img/touche/key_up_pressed.png")
+            key_u = pygame.transform.scale(key_u, (60, 60))
+            Fenetre.blit(key_u, (95, 580))
+        else:
+            key_u = pygame.image.load("img/touche/key_up.png")
+            Fenetre.blit(key_u, (100, 590))
+        pygame.display.update()
+
+main()
