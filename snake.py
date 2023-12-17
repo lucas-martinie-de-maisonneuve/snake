@@ -474,7 +474,7 @@ def main():
             Fenetre.blit(texte_titre, texte_titre_rect)
 
         TextContinue = pygame.font.SysFont(None, 50, italic=True, bold=True).render(
-            "Appuyer sur 'Enter' pour continuer", True, (128, 139, 150))
+            "Appuyer sur 'Entrer' pour continuer", True, (128, 139, 150))
         Continue_rect = TextContinue.get_rect(center=(W // 2, H // 2 + 100))
         Fenetre.blit(TextContinue, Continue_rect)
 
