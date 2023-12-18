@@ -299,8 +299,9 @@ def choose_snake():
                     elif c == 4:
                         color = 'yellow'
                     elif c == 5:
-                        rand_color = ['green','blue','pink','yellow']
-                        color = random.choice(rand_color)
+                        color = 'sandwich'
+                        # rand_color = ['green','blue','pink','yellow']
+                        # color = random.choice(rand_color)
                     return color
                 elif event.key == pygame.K_RIGHT:
                     right = True
