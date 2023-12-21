@@ -98,7 +98,7 @@ def play(color,user_input):
         elif color == 'desert':
             Fenetre.fill((183, 149, 11))
         elif color == 'neige':
-            Fenetre.fill((121, 125, 127))
+            Fenetre.fill((214, 234, 248))
         else:
             Fenetre.fill((82, 190, 128))
 
@@ -349,8 +349,6 @@ def choose_snake():
                         color = 'desert'
                     elif c == 8:
                         color = 'neige'
-                        # rand_color = ['green','blue','pink','yellow']
-                        # color = random.choice(rand_color)
                     main()
                     return color
                 elif event.key == pygame.K_RIGHT:
@@ -491,6 +489,19 @@ def choose_snake():
         Fenetre.blit(key_ret, (625, 580))   
         banane(right, left, down, up, w_k, h_k)
 
+        pygame.draw.rect(Fenetre, (69, 90, 100), (W - 45, 100, 30, H - 200))
+        if etage == 1:
+            pygame.draw.rect(Fenetre, (39, 55, 70), (W - 42, 130, 24, 180))
+        elif etage == 2:
+            pygame.draw.rect(Fenetre, (39, 55, 70), (W - 42, 270, 24, 180))
+        elif etage == 3:
+            pygame.draw.rect(Fenetre, (39, 55, 70), (W - 42, 390, 24, 180))    
+        if etage == 1 or etage == 2:
+            scrolling_arrow = pygame.image.load("img/touche/fleche_down.png")
+            Fenetre.blit(scrolling_arrow, (W-42, 560))
+        if etage == 2 or etage == 3:
+            scrolling_arrow = pygame.image.load("img/touche/fleche.png")
+            Fenetre.blit(scrolling_arrow, (W-42, 120))
         pygame.display.update()
 
 def main():
@@ -560,18 +571,18 @@ def main():
         Fenetre.blit(ColorTitleS, ColorTitleS_rect)
         Fenetre.blit(ColorTitle, ColorTitle_rect)
 
-        c1_text = pygame.font.Font(None, 60).render("Jouer", True, (210, 180, 222))
+        c1_text = pygame.font.SysFont('Calibri', 60, bold=True).render("Jouer", True, (210, 180, 222))
         c1_button_rect = pygame.Rect(W // 2  - 300, 150, 600, 100)
         c1_text_rect = c1_text.get_rect(center=c1_button_rect.center)
         pygame.draw.rect(Fenetre, (69, 90, 100), c1_button_rect)
         Fenetre.blit(c1_text, c1_text_rect)
-        c2_text = pygame.font.Font(None, 60).render("Options", True, (210, 180, 222))
+        c2_text = pygame.font.SysFont('Calibri', 60, bold=True).render("Options", True, (210, 180, 222))
         c2_button_rect = pygame.Rect(W // 2  - 300, 300, 600, 100)
         c2_text_rect = c2_text.get_rect(center=c2_button_rect.center)
         pygame.draw.rect(Fenetre, (69, 90, 100), c2_button_rect)
         Fenetre.blit(c2_text, c2_text_rect)
         
-        c3_text = pygame.font.Font(None, 60).render("Score", True, (210, 180, 222))
+        c3_text = pygame.font.SysFont('Calibri', 60, bold=True).render("Score", True, (210, 180, 222))
         c3_button_rect = pygame.Rect(W // 2  - 300, 450, 600, 100)
         c3_text_rect = c3_text.get_rect(center=c3_button_rect.center)
         pygame.draw.rect(Fenetre, (69, 90, 100), c3_button_rect)
@@ -589,6 +600,10 @@ def main():
         key_ret = pygame.image.load("img/touche/key_return.png")
         Fenetre.blit(key_ret, (625, 580))        
         banane(right, left, down, up, w_k, h_k)
+
+        credit = pygame.font.SysFont('Calibri', 18).render("Snake par Lucas Martinie", True, (189, 189, 189))
+        credit_rect = credit.get_rect(center=(W - 140, H - 15))
+        Fenetre.blit(credit, credit_rect)
        
         pygame.display.update()
 
@@ -654,11 +669,11 @@ def score():
 
         Fenetre.fill((39, 55, 70))
 
-        TextContinue = pygame.font.SysFont(None, 50, italic=True, bold=True).render("Appuyer sur 'Entrer' pour revenir au menu", True, (128, 139, 150))
+        TextContinue = pygame.font.SysFont('Calibri', 50, italic=True, bold=True).render("Appuyer sur 'Entrer' pour revenir au menu", True, (128, 139, 150))
         Continue_rect = TextContinue.get_rect(center=(W // 2, H - 50))
         Fenetre.blit(TextContinue, Continue_rect)
 
-        text = pygame.font.Font(None, 80).render("Tableau des scores", True, (0, 0, 0))
+        text = pygame.font.SysFont('Calibri', 80, bold=True).render("Tableau des scores", True, (0, 0, 0))
         text_rect = text.get_rect(center=(W // 2, 55))
         Fenetre.blit(text, text_rect)
         if len(scores) > 14:
