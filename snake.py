@@ -4,6 +4,7 @@ import random
 pygame.init()
 
 W, H = 800, 700
+Back = pygame.display.set_mode((W, H))
 Fenetre = pygame.display.set_mode((W, H))
 pygame.display.set_caption('Snake by Lucas Martinie')
 
@@ -12,8 +13,9 @@ game_over = False
 color = 'green'
 user_input = ''
 
-def play(color_snake):
+def play(color,user_input):
     global game_over
+    global point
     game_over = False
     x = random.randrange(200, W - 200)
     y = random.randrange(150, H - 150)
@@ -27,6 +29,7 @@ def play(color_snake):
     pomme_x = random.randrange(20, W - 20)
     pomme_y = random.randrange(100, H - 20)
 
+    
     snake_liste = []
     snake_direction = []
     turning_positions = []
@@ -86,9 +89,19 @@ def play(color_snake):
                 elif event.key == pygame.K_SPACE:
                     paused()                    
 
-        Fenetre.fill((82, 190, 128))
+        if color == 'water':
+            Fenetre.fill((36, 113, 163))
+        elif color == 'desert':
+            Fenetre.fill((183, 149, 11))
+        else:
+            Fenetre.fill((82, 190, 128))
+
         if color == 'sandwich':
             object_eat = 'sandwich'
+        elif color == "water":
+            object_eat = 'poisson'
+        elif color == "desert":
+            object_eat = 'papyrus'
         else:
             object_eat = 'pomme'
         if bonus <= 2:
@@ -99,8 +112,10 @@ def play(color_snake):
             Fenetre.blit(pomme_img, (pomme_x, pomme_y))
 
         if x > W - 20 or x < 0 or y > H - 20 or y < 80:
+            update_scores(user_input, point)
             game_over = True
             game_over_screen()
+
 
         x += x_change 
         y += y_change
@@ -182,7 +197,7 @@ def play(color_snake):
             pomme_x = random.randrange(25, W - 25)
             pomme_y = random.randrange(105, H - 25)
 
-        pygame.time.Clock().tick(25)
+        pygame.time.Clock().tick(30)
 
 def add_turning_position(x, y, angle_a, turning_positions):
     if (x, y) not in [pos for pos, _ in turning_positions]:
@@ -214,7 +229,6 @@ def paused():
 def game_over_screen():
     global game_over
     lost = True
-
     while lost:
         for event in pygame.event.get():
 
@@ -222,7 +236,7 @@ def game_over_screen():
                 pygame.quit()
                 quit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_RETURN:
                     game_over = False
                     main()
 
@@ -237,7 +251,7 @@ def game_over_screen():
         Fenetre.blit(TextOverS, TextOverS_rect)
         Fenetre.blit(TextOver, TextOver_rect)
 
-        TextContinue = pygame.font.SysFont(None, 50, italic=True, bold=True).render("Appuyer sur 'Espace' pour relancer la partie", True, (128, 139, 150))
+        TextContinue = pygame.font.SysFont(None, 50, italic=True, bold=True).render("Appuyer sur 'Entrer' pour revenir au menu", True, (128, 139, 150))
         Continue_rect = TextContinue.get_rect(center=(W // 2, H // 2 + 100))
         Fenetre.blit(TextContinue, Continue_rect)
 
@@ -255,7 +269,7 @@ def username():
                 if event.key == pygame.K_BACKSPACE:
                     supr = True
                 elif event.key == pygame.K_RETURN:
-                    return user_input , play()
+                    return user_input , play(color,user_input)
                 else:
                     user_input += event.unicode
             elif event.type == pygame.KEYUP:
@@ -292,9 +306,11 @@ def choose_snake():
     left = False 
     down = False
     up = False
-    glisse = False
+    etage = 1
     w_k = 40
     h_k = 580
+    scroll = 0
+    scroll2 = 0
     global color
     while True:
         for event in pygame.event.get():
@@ -302,6 +318,10 @@ def choose_snake():
                 pygame.quit()
                 quit()
             elif event.type == pygame.KEYDOWN:
+                print (f"""-----------------------------------
+                c ={c} 
+                scroll : {scroll} 
+                scroll-2 {scroll2}""")
                 if event.key == pygame.K_RETURN:
                     if c == 1:
                         color = 'green'
@@ -311,55 +331,32 @@ def choose_snake():
                         color = 'pink'
                     elif c == 4:
                         color = 'yellow'
+                    elif c == 5:
+                        color = 'water'
                     elif c == 6:
                         color = 'sandwich'
-                    elif c == 5:
+                    elif c == 7:
+                        color = 'desert'
+                    elif c == 8:
                         rand_color = ['green','blue','pink','yellow']
                         color = random.choice(rand_color)
                     main()
                     return color
-                if event.key == pygame.K_p and event.key == pygame.K_o:
-                    color = 'sandwich'
                 elif event.key == pygame.K_RIGHT:
                     right = True
-                    if c == 1:
-                        c = 2
-                    elif c == 3:
-                        c = 4
-                    elif c == 5:
-                        c = 6
+                    if c < 8:
+                        c+= 1
                 elif event.key == pygame.K_LEFT:
                     left = True
-                    if c == 2:
-                        c = 1
-                    elif c == 4:
-                        c = 3
-                    elif c == 6:
-                        c = 5
+                    if c > 1:
+                        c-= 1
                 elif event.key == pygame.K_DOWN:
                     down = True
-                    if c == 1:
-                        c = 3
-                    elif c == 2:
-                        c = 4
-                    elif c == 3:
-                        c = 5
-                        glisse = True
-                    elif c == 4:
-                        c = 6
-                        glisse = True
+                    if c < 7:
+                        c+= 2
                 elif event.key == pygame.K_UP:
-                    up = True
-                    if c == 5:
-                        c = 3
-                    elif c == 6:
-                        c = 4
-                    elif c == 3:
-                        c = 1
-                        glisse = False
-                    elif c == 4:
-                        c = 2
-                        glisse = False
+                    if c > 2:
+                        c-= 2
             elif event.type == pygame.KEYUP:
                 right = False
                 left = False 
@@ -368,65 +365,70 @@ def choose_snake():
 
         Fenetre.fill((39, 55, 70))
 
-        y_glisse = 0
-
-        while glisse and y_glisse >= -250:
-            y_glisse -= 1
-        while not glisse and y_glisse <= 0:
-            y_glisse += 1
-
         pygame.time.Clock().tick(40)
 
-        c1_button_rect = pygame.Rect(100, 110 + y_glisse, 250, 200)
+        c1_button_rect = pygame.Rect(100, 110 + scroll, 250, 200)
         pygame.draw.rect(Fenetre, (69, 90, 100), c1_button_rect)
-
-        c2_button_rect = pygame.Rect(450, 110 + y_glisse, 250, 200)
+        c2_button_rect = pygame.Rect(450, 110 + scroll, 250, 200)
         pygame.draw.rect(Fenetre, (69, 90, 100), c2_button_rect)
-
-        c3_button_rect = pygame.Rect(100, 360 + y_glisse, 250, 200)
+        c3_button_rect = pygame.Rect(100, 360 + scroll, 250, 200)
         pygame.draw.rect(Fenetre, (69, 90, 100), c3_button_rect)
-
-        c4_button_rect = pygame.Rect(450, 360 + y_glisse, 250, 200)
+        c4_button_rect = pygame.Rect(450, 360 + scroll, 250, 200)
         pygame.draw.rect(Fenetre, (69, 90, 100), c4_button_rect)
+        
+        c5_button_rect = pygame.Rect(100, 360+scroll2, 250, 200)
+        c6_button_rect = pygame.Rect(450, 360+scroll2, 250, 200)
+        c7_button_rect = pygame.Rect(100, 360, 250, 200)
+        c8_button_rect = pygame.Rect(450, 360, 250, 200)
 
-        c1_button_rect = pygame.Rect(100, 110 + y_glisse, 250, 200)
-        pygame.draw.rect(Fenetre, (69, 90, 100), c1_button_rect)
-        c2_button_rect = pygame.Rect(450, 110 + y_glisse, 250, 200)
-        pygame.draw.rect(Fenetre, (69, 90, 100), c2_button_rect)
-        c3_button_rect = pygame.Rect(100, 360 + y_glisse, 250, 200)
-        pygame.draw.rect(Fenetre, (69, 90, 100), c3_button_rect)
-        c4_button_rect = pygame.Rect(450, 360 + y_glisse, 250, 200)
-        pygame.draw.rect(Fenetre, (69, 90, 100), c4_button_rect)
-            
         snake_g = pygame.image.load(f"img/choose/snake_green.png")
-        Fenetre.blit(snake_g, (100, 110 + y_glisse))
+        Fenetre.blit(snake_g, (100, 110 + scroll))
 
         snake_b = pygame.image.load(f"img/choose/snake_blue.png")
-        Fenetre.blit(snake_b, (450, 110 + y_glisse))
+        Fenetre.blit(snake_b, (450, 110 + scroll))
 
         snake_p = pygame.image.load(f"img/choose/snake_pink.png")
-        Fenetre.blit(snake_p, (100, 360 + y_glisse))
+        Fenetre.blit(snake_p, (100, 360 + scroll))
 
         snake_y = pygame.image.load(f"img/choose/snake_yellow.png")
-        Fenetre.blit(snake_y, (450, 360 + y_glisse))
+        Fenetre.blit(snake_y, (450, 360 + scroll))
+
+        snake_water = pygame.image.load(f"img/choose/snake_water.png")
+
+        snake_sandwich = pygame.image.load(f"img/choose/snake_sandwich.png")
+        snake_desert = pygame.image.load(f"img/choose/snake_desert.png")
 
         if c == 1:
             pygame.draw.rect(Fenetre, (140, 140, 140), c1_button_rect)
-            Fenetre.blit(snake_g, (100, 110 + y_glisse))
+            Fenetre.blit(snake_g, (100, 110 + scroll))
 
         elif c == 2:
             pygame.draw.rect(Fenetre, (140, 140, 140), c2_button_rect)
-            Fenetre.blit(snake_b, (450, 110 + y_glisse))
+            Fenetre.blit(snake_b, (450, 110 + scroll))
 
         elif c == 3:
             pygame.draw.rect(Fenetre, (140, 140, 140), c3_button_rect)
-            Fenetre.blit(snake_p, (100, 360 + y_glisse))
+            Fenetre.blit(snake_p, (100, 360 + scroll))
         elif c == 4:
             pygame.draw.rect(Fenetre, (140, 140, 140), c4_button_rect)
-            Fenetre.blit(snake_y, (450, 360 + y_glisse))
-        if not glisse: 
-            c5_button_rect = pygame.Rect(W // 2  - 150, 605, 300, 50)
-            c5_text = pygame.font.Font(None, 30).render("Aléatoire", True, (210, 180, 222))
+            Fenetre.blit(snake_y, (450, 360 + scroll))
+        if etage == 1 and c > 4:
+            scroll = -250
+            etage = 2
+        elif etage == 2 and c > 6:
+            scroll = -500
+            scroll2 = -250
+            etage = 3
+        elif etage == 3 and c < 5:
+            etage = 2
+            scroll = -250
+            scroll2 = 0
+        elif etage == 2 and c < 3:
+            scroll = 0
+            etage = 1
+
+
+        if c <= 4 and scroll == 0: 
             ColorTitle = pygame.font.SysFont(None, 70, italic=True, bold=True).render("Choisir la couleur du Snake", True, (60, 73, 171))
             ColorTitle_rect = ColorTitle.get_rect(center=(W // 2, 40))
             ColorTitleS = pygame.font.SysFont(None, 70, italic=True, bold=True).render("Choisir la couleur du Snake", True, (60, 73, 131))
@@ -439,25 +441,40 @@ def choose_snake():
             Fenetre.blit(ColorTitleS2, ColorTitleS2_rect)
             Fenetre.blit(ColorTitleS, ColorTitleS_rect)
             Fenetre.blit(ColorTitle, ColorTitle_rect)
-        else:
-            c5_button_rect = pygame.Rect(100, 360, 250, 200)
-            c5_text = pygame.font.Font(None, 60).render("Aléatoire", True, (210, 180, 222))
-            c6_button_rect = pygame.Rect(450, 360, 250, 200)
+
+        elif c >= 2 and scroll < 0:
+            pygame.draw.rect(Fenetre, (69, 90, 100), c5_button_rect)
+            Fenetre.blit(snake_water, (100, 360 + scroll2))
+
             pygame.draw.rect(Fenetre, (69, 90, 100), c6_button_rect)
-            snake_y = pygame.image.load(f"img/choose/snake_sandwich.png")
+            Fenetre.blit(snake_sandwich, (450, 360 + scroll2))
+
+        if c > 4 and scroll == -500:
+            pygame.draw.rect(Fenetre, (69, 90, 100), c7_button_rect)
+            Fenetre.blit(snake_desert, (100, 360))
+
+            pygame.draw.rect(Fenetre, (69, 90, 100), c8_button_rect)
             Fenetre.blit(snake_y, (450, 360))
 
-        c5_text_rect = c5_text.get_rect(center=c5_button_rect.center)
-        pygame.draw.rect(Fenetre, (69, 90, 100), c5_button_rect)
-        Fenetre.blit(c5_text, c5_text_rect)
+        menu_button_rect = pygame.Rect(W // 2  - 150, 605, 300, 50)
+        menu_text = pygame.font.Font(None, 30).render("Voir plus", True, (210, 180, 222))
+        menu_text_rect = menu_text.get_rect(center=menu_button_rect.center)
+        pygame.draw.rect(Fenetre, (69, 90, 100), menu_button_rect)
+        Fenetre.blit(menu_text, menu_text_rect)
 
         if c == 5:
             pygame.draw.rect(Fenetre, (140, 140, 140), c5_button_rect)
-            Fenetre.blit(c5_text, c5_text_rect)
+            Fenetre.blit(snake_water, (100, 360+ scroll2))
         elif c== 6:
             pygame.draw.rect(Fenetre, (140, 140, 140), c6_button_rect)
+            Fenetre.blit(snake_sandwich, (450, 360+ scroll2))
+        elif c == 7:
+            pygame.draw.rect(Fenetre, (140, 140, 140), c7_button_rect)
+            Fenetre.blit(snake_desert, (100, 360))            
+        elif c == 8:
+            pygame.draw.rect(Fenetre, (140, 140, 140), c8_button_rect)
             Fenetre.blit(snake_y, (450, 360))
-
+        
         key_ret = pygame.image.load("img/touche/key_return.png")
         Fenetre.blit(key_ret, (625, 580))   
         banane(right, left, down, up, w_k, h_k)
@@ -473,7 +490,7 @@ def main():
     w_k = 40
     h_k = 580
     c = 1 
-    color_snake = ''
+    color = ''
     
     while menu:
         for event in pygame.event.get():
@@ -484,9 +501,11 @@ def main():
                 if event.key == pygame.K_RETURN:
                     menu = False
                     if c == 1:
-                        play(color_snake)
+                        username()
                     elif c == 2:
-                        color_snake = choose_snake()
+                        color = choose_snake()
+                    elif c == 3:
+                        score()
                 elif event.key == pygame.K_RIGHT:
                     right = True
                 elif event.key == pygame.K_LEFT:
@@ -511,7 +530,10 @@ def main():
                 up = False
 
         Fenetre.fill((39, 55, 70))
-        titre = "Snake"
+        if color == 'sandwich':
+            titre = "Snack"
+        else: 
+            titre = "Snake"
 
         ColorTitle = pygame.font.SysFont(None, 150, italic=True, bold=True).render(titre, True, (39, 174, 96))
         ColorTitle_rect = ColorTitle.get_rect(center=(W // 2, 60))
@@ -593,4 +615,77 @@ def banane(right, left, down, up, w_k, h_k):
 
     return key_r, key_l, key_d, key_u
 
+def load_scores():
+    scores = []
+    try:
+        with open("scores.txt", "r") as scores_file:
+            for line in scores_file:
+                data = line.strip().split()
+                if len(data) == 2:
+                    name, score = data
+                    scores.append((name, int(score)))
+    except FileNotFoundError:
+        pass
+
+    return scores
+
+def score():
+    scores = load_scores()
+    scores = sorted(scores, key=lambda x: x[1], reverse=True)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key ==  pygame.K_RETURN:
+                    main()
+
+        Fenetre.fill((39, 55, 70))
+
+        TextContinue = pygame.font.SysFont(None, 50, italic=True, bold=True).render("Appuyer sur 'Entrer' pour revenir au menu", True, (128, 139, 150))
+        Continue_rect = TextContinue.get_rect(center=(W // 2, H - 50))
+        Fenetre.blit(TextContinue, Continue_rect)
+
+        text = pygame.font.Font(None, 80).render("Tableau des scores", True, (0, 0, 0))
+        text_rect = text.get_rect(center=(W // 2, 55))
+        Fenetre.blit(text, text_rect)
+        if len(scores) > 14:
+            half_length = len(scores) // 2
+            left_scores = scores[:half_length]
+            right_scores = scores[half_length:]
+            left_position = 150
+            for name, score in left_scores:
+                score_text = pygame.font.Font(None, 38).render(f"{name}: {score}", True, (128, 139, 150))
+                score_rect = score_text.get_rect(topleft=(W // 4, left_position))
+                Fenetre.blit(score_text, score_rect)
+                left_position += 30
+
+            right_position = 150
+            for name, score in right_scores:
+                score_text = pygame.font.Font(None, 38).render(f"{name}: {score}", True, (128, 139, 150))
+                score_rect = score_text.get_rect(topright=(3 * W // 4, right_position))
+                Fenetre.blit(score_text, score_rect)
+                right_position += 30
+        else:
+            position = 150
+            for name, score in scores:
+                score_text = pygame.font.Font(None, 38).render(f"{name}: {score}", True, (128, 139, 150))
+                score_rect = score_text.get_rect(center=(W // 2, position))
+                Fenetre.blit(score_text, score_rect)
+                position += 30
+
+        pygame.display.flip()
+
+def update_scores(user_input, point):
+    scores = load_scores()
+    print ("True")
+    print (point)
+    print (user_input)
+
+    scores.append((user_input, point))
+
+    with open("scores.txt", "w") as scores_file:
+        for name, score in scores:
+            scores_file.write(f"{name} {score}\n")
 main()
