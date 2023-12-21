@@ -29,13 +29,18 @@ def play(color,user_input):
     pomme_x = random.randrange(20, W - 20)
     pomme_y = random.randrange(100, H - 20)
 
-    
     snake_liste = []
     snake_direction = []
     turning_positions = []
     snake_taille = 1
     point = 0
-
+    with open("scores.txt", "r") as scores_file:
+        scores = [tuple(map(str, line.strip().split())) for line in scores_file if len(line.strip().split()) == 2]
+        if scores:
+            sorted_scores = sorted(scores, key=lambda x: int(x[1]), reverse=True)
+            high_score = max(sorted_scores, key=lambda x: int(x[1]))
+        else:
+            high_score = "0"
     bonus = random.randint(1,100)
 
     while not game_over:
@@ -84,15 +89,16 @@ def play(color,user_input):
                         y_change = 20
                         x_change = 0
                         angle = 90
-                        add_turning_position(x, y, angle_a, turning_positions)
-
+                        add_turning_position(x, y, angle_a, turning_positions)                                
                 elif event.key == pygame.K_SPACE:
-                    paused()                    
-
+                    paused()                   
+                
         if color == 'water':
             Fenetre.fill((36, 113, 163))
         elif color == 'desert':
             Fenetre.fill((183, 149, 11))
+        elif color == 'neige':
+            Fenetre.fill((121, 125, 127))
         else:
             Fenetre.fill((82, 190, 128))
 
@@ -102,6 +108,8 @@ def play(color,user_input):
             object_eat = 'poisson'
         elif color == "desert":
             object_eat = 'papyrus'
+        elif color == 'neige':
+            object_eat = 'boulle'
         else:
             object_eat = 'pomme'
         if bonus <= 2:
@@ -115,8 +123,6 @@ def play(color,user_input):
             update_scores(user_input, point)
             game_over = True
             game_over_screen()
-
-
         x += x_change 
         y += y_change
 
@@ -168,12 +174,20 @@ def play(color,user_input):
                     Fenetre.blit(body_a, segment)
 
         pygame.draw.rect(Fenetre, (22, 22, 62), (0, 0, 800, 80))
+
         ShowScore = pygame.font.SysFont(None, 40, italic=True, bold=True).render(f"{point}", True, (128, 139, 150))
         ShowScore_rect = ShowScore.get_rect(center=(150, 40))
         pomme_img = pygame.image.load(f'img/manger/{object_eat}_n.png')
         pomme_img = pygame.transform.scale(pomme_img, (40, 40))
         Fenetre.blit(ShowScore, ShowScore_rect)
         Fenetre.blit(pomme_img, (90, 80 // 2 - pomme_img.get_width() // 2))
+
+        HighestScore = pygame.font.SysFont(None, 40, italic=True, bold=True).render(f"{high_score[1]}", True, (128, 139, 150))
+        HighestScore_rect = HighestScore.get_rect(center=(260, 40))
+        pomme_img = pygame.image.load(f'img/manger/trophee.png')
+        pomme_img = pygame.transform.scale(pomme_img, (40, 40))
+        Fenetre.blit(HighestScore, HighestScore_rect)
+        Fenetre.blit(pomme_img, (200, 80 // 2 - pomme_img.get_width() // 2))
 
         if color == "sandwich":
             title = "Snack"
@@ -318,10 +332,6 @@ def choose_snake():
                 pygame.quit()
                 quit()
             elif event.type == pygame.KEYDOWN:
-                print (f"""-----------------------------------
-                c ={c} 
-                scroll : {scroll} 
-                scroll-2 {scroll2}""")
                 if event.key == pygame.K_RETURN:
                     if c == 1:
                         color = 'green'
@@ -338,8 +348,9 @@ def choose_snake():
                     elif c == 7:
                         color = 'desert'
                     elif c == 8:
-                        rand_color = ['green','blue','pink','yellow']
-                        color = random.choice(rand_color)
+                        color = 'neige'
+                        # rand_color = ['green','blue','pink','yellow']
+                        # color = random.choice(rand_color)
                     main()
                     return color
                 elif event.key == pygame.K_RIGHT:
@@ -381,22 +392,23 @@ def choose_snake():
         c7_button_rect = pygame.Rect(100, 360, 250, 200)
         c8_button_rect = pygame.Rect(450, 360, 250, 200)
 
-        snake_g = pygame.image.load(f"img/choose/snake_green.png")
+        snake_g = pygame.image.load("img/choose/snake_green.png")
         Fenetre.blit(snake_g, (100, 110 + scroll))
 
-        snake_b = pygame.image.load(f"img/choose/snake_blue.png")
+        snake_b = pygame.image.load("img/choose/snake_blue.png")
         Fenetre.blit(snake_b, (450, 110 + scroll))
 
-        snake_p = pygame.image.load(f"img/choose/snake_pink.png")
+        snake_p = pygame.image.load("img/choose/snake_pink.png")
         Fenetre.blit(snake_p, (100, 360 + scroll))
 
-        snake_y = pygame.image.load(f"img/choose/snake_yellow.png")
+        snake_y = pygame.image.load("img/choose/snake_yellow.png")
         Fenetre.blit(snake_y, (450, 360 + scroll))
 
-        snake_water = pygame.image.load(f"img/choose/snake_water.png")
+        snake_water = pygame.image.load("img/choose/snake_water.png")
 
-        snake_sandwich = pygame.image.load(f"img/choose/snake_sandwich.png")
-        snake_desert = pygame.image.load(f"img/choose/snake_desert.png")
+        snake_sandwich = pygame.image.load("img/choose/snake_sandwich.png")
+        snake_desert = pygame.image.load("img/choose/snake_desert.png")
+        snake_neige = pygame.image.load("img/choose/snake_neige.png")
 
         if c == 1:
             pygame.draw.rect(Fenetre, (140, 140, 140), c1_button_rect)
@@ -454,7 +466,7 @@ def choose_snake():
             Fenetre.blit(snake_desert, (100, 360))
 
             pygame.draw.rect(Fenetre, (69, 90, 100), c8_button_rect)
-            Fenetre.blit(snake_y, (450, 360))
+            Fenetre.blit(snake_neige, (450, 360))
 
         menu_button_rect = pygame.Rect(W // 2  - 150, 605, 300, 50)
         menu_text = pygame.font.Font(None, 30).render("Voir plus", True, (210, 180, 222))
@@ -473,7 +485,7 @@ def choose_snake():
             Fenetre.blit(snake_desert, (100, 360))            
         elif c == 8:
             pygame.draw.rect(Fenetre, (140, 140, 140), c8_button_rect)
-            Fenetre.blit(snake_y, (450, 360))
+            Fenetre.blit(snake_neige, (450, 360))
         
         key_ret = pygame.image.load("img/touche/key_return.png")
         Fenetre.blit(key_ret, (625, 580))   
@@ -626,7 +638,6 @@ def load_scores():
                     scores.append((name, int(score)))
     except FileNotFoundError:
         pass
-
     return scores
 
 def score():
@@ -656,36 +667,33 @@ def score():
             right_scores = scores[half_length:]
             left_position = 150
             for name, score in left_scores:
-                score_text = pygame.font.Font(None, 38).render(f"{name}: {score}", True, (128, 139, 150))
+                score_text = pygame.font.Font(None, 38).render(f"{name}: {score}", True, (0, 0, 0))
                 score_rect = score_text.get_rect(topleft=(W // 4, left_position))
                 Fenetre.blit(score_text, score_rect)
                 left_position += 30
 
             right_position = 150
             for name, score in right_scores:
-                score_text = pygame.font.Font(None, 38).render(f"{name}: {score}", True, (128, 139, 150))
+                score_text = pygame.font.Font(None, 38).render(f"{name}: {score}", True, (0, 0, 0))
                 score_rect = score_text.get_rect(topright=(3 * W // 4, right_position))
                 Fenetre.blit(score_text, score_rect)
                 right_position += 30
         else:
-            position = 150
+            y_position = 150
             for name, score in scores:
                 score_text = pygame.font.Font(None, 38).render(f"{name}: {score}", True, (128, 139, 150))
-                score_rect = score_text.get_rect(center=(W // 2, position))
+                score_rect = score_text.get_rect(center=(W // 2, y_position))
                 Fenetre.blit(score_text, score_rect)
-                position += 30
+                y_position += 30
 
         pygame.display.flip()
 
 def update_scores(user_input, point):
     scores = load_scores()
-    print ("True")
-    print (point)
-    print (user_input)
-
     scores.append((user_input, point))
 
     with open("scores.txt", "w") as scores_file:
         for name, score in scores:
             scores_file.write(f"{name} {score}\n")
+
 main()
