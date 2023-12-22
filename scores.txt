@@ -1,4 +1,2 @@
-Lucas 18
-Lucas 8
-aze 0
- 0
+Lucas 25
+Thomas 8
