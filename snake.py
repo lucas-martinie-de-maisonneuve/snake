@@ -513,8 +513,20 @@ def main():
     w_k = 40
     h_k = 580
     c = 1 
-    color = ''
-    
+    color = 'green'
+    x_change = -20
+    y_change = 0
+    angle = 0
+    angle_a = 90
+    snake_liste = []
+    snake_direction = []
+    turning_positions = []
+    snake_taille = 20
+    decalage = 0
+    dir = 'left'
+    starting = True
+    x = 400
+    y = 230
     while menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -539,12 +551,15 @@ def main():
                         c=2
                     elif c==2:
                         c=3
+                    starting = True
+
                 elif event.key == pygame.K_UP:
                     up = True
                     if c== 2:
                         c=1
                     elif c==3:
                         c=2
+                    starting = True
 
             elif event.type == pygame.KEYUP:
                 right = False
@@ -604,6 +619,130 @@ def main():
         credit = pygame.font.SysFont('Calibri', 18).render("Snake par Lucas Martinie", True, (189, 189, 189))
         credit_rect = credit.get_rect(center=(W - 140, H - 15))
         Fenetre.blit(credit, credit_rect)
+        while starting:
+            if c == 1:
+                decalage = 0
+                x = 400
+                y = 230
+                dir = 'left'
+                starting = False
+            elif c == 2:
+                decalage = 150
+                x = 400
+                y = 380
+                dir = 'left'
+                starting = False
+            elif c == 3:
+                decalage = 300
+                x = 400
+                y = 530
+                dir = 'left'
+                starting = False
+
+        if dir == 'left':
+            if y_change < 0:
+                angle_a = -90
+            elif y_change > 0:
+                angle_a = 180
+            if x_change != -20:
+                x_change = -20
+                y_change = 0
+                angle = 0
+                add_turning_position(x, y, angle_a, turning_positions)
+
+        elif dir == 'right':
+            if y_change < 0:
+                angle_a = 0
+            elif y_change > 0:
+                angle_a = 90
+            if x_change != 20:
+                x_change = 20
+                y_change = 0
+                angle = 180
+                add_turning_position(x, y, angle_a, turning_positions)
+
+        elif dir == 'up':
+            if x_change < 0:
+                angle_a = 90
+            elif x_change > 0:
+                angle_a = 180
+            if y_change != -20:
+                y_change = -20
+                x_change = 0
+                angle = 270
+                add_turning_position(x, y, angle_a, turning_positions)
+
+        elif dir == 'down':
+            if x_change < 0:
+                angle_a = 0
+            elif x_change > 0:
+                angle_a = 270
+            if y_change != 20:
+                y_change = 20
+                x_change = 0
+                angle = 90
+                add_turning_position(x, y, angle_a, turning_positions)
+
+        x += x_change
+        y += y_change
+
+
+        if x == 100 and y == 230 + decalage:
+            dir = 'up'
+        elif x == 100 and y == 150 + decalage:
+            dir = 'right'
+        elif x == 680 and y == 150 + decalage:
+            dir = 'down'
+        elif x == 680 and y == 230 + decalage:
+            dir = 'left'
+
+        snake_corps = []
+        snake_corps.append(x)
+        snake_corps.append(y)
+        snake_liste.append(snake_corps)
+        snake_direction.append(angle)
+
+        for turning_position, angle_a in list(turning_positions):
+            if tuple(snake_liste[-1]) == turning_position:
+                turning_positions.remove((turning_position, angle_a))
+
+        if len(snake_liste) > snake_taille:
+            del snake_liste[0]
+            del snake_direction[0]
+
+        for i, (segment, direction) in enumerate(zip(snake_liste, snake_direction)):
+            if i == len(snake_liste) - 1:
+                head = pygame.image.load(f"img/{color}/head.png")
+                head_a = pygame.transform.rotate(head, angle)
+                Back.blit(head_a, segment)
+            elif i == 0:
+                position_actu = (segment[0], segment[1])
+
+                for pos, angle_a in turning_positions:
+                    if position_actu == pos:
+                        turning_body = pygame.image.load(f"img/{color}/body_turn.png")
+                        turning_body_a = pygame.transform.rotate(turning_body, angle_a)
+                        Back.blit(turning_body_a, segment)
+                        break
+                else:
+                    tail = pygame.image.load(f"img/{color}/tail.png")
+                    tail_a = pygame.transform.rotate(tail, direction)
+                    Back.blit(tail_a, segment)
+
+            else:
+                position_actu = (segment[0], segment[1])
+                for pos, angle_a in turning_positions:
+                    if position_actu == pos:
+                        turning_body = pygame.image.load(f"img/{color}/body_turn.png")
+                        turning_body_a = pygame.transform.rotate(turning_body, angle_a)
+                        Back.blit(turning_body_a, segment)
+                        break
+                else:
+                    body = pygame.image.load(f"img/{color}/body.png")
+                    body_a = pygame.transform.rotate(body, direction)
+                    Back.blit(body_a, segment)
+
+        pygame.time.Clock().tick(30)
        
         pygame.display.update()
 
@@ -710,5 +849,6 @@ def update_scores(user_input, point):
     with open("scores.txt", "w") as scores_file:
         for name, score in scores:
             scores_file.write(f"{name} {score}\n")
+
 
 main()
