@@ -496,7 +496,8 @@ def paused():
         pause_img_a = pygame.transform.scale(pause_img, (300,300))
         Fenetre.blit(pause_img_a,(W//2 - pause_img_a.get_width()//2, 180))
 
-        TextPause = pygame.font.SysFont(None, 150, italic=True).render("Pause", True, (128, 139, 150))
+        TextPause = pygame.font.SysFont('Calibri', 150, italic=True, bold=True).render("Pause", True, (128, 139, 150))
+        TextPause.set_alpha(180)
         Pause_rect = TextPause.get_rect(center=(W // 2, 330))
         Fenetre.blit(TextPause, Pause_rect)
 
@@ -570,13 +571,13 @@ def username():
         Fenetre.fill((39, 55, 70))
         snake_title("Snake")
 
-        text = pygame.font.SysFont('Calibri', 80, italic=True).render("Entrer votre nom", True, (0, 0, 0))
+        text = pygame.font.SysFont('Calibri', 80, italic=True, bold=True).render("Entrer votre nom", True, (0, 0, 0))
         text_rect = text.get_rect(center=(W // 2, H // 3))
         Fenetre.blit(text, text_rect)
         
         input_rect = pygame.Rect(W // 2 - 200, H // 2, 400, 80)
-        pygame.draw.rect(Fenetre, (0, 0, 0), input_rect, 2)
-        input_surface = font.render(user_input.capitalize(), True, (0, 0, 0))
+        pygame.draw.rect(Fenetre, (0, 0, 0), input_rect, 3)
+        input_surface = font.render(user_input.capitalize(), True, (212, 239, 223))
         input_surface_rect = input_surface.get_rect(center=input_rect.center)
         Fenetre.blit(input_surface, (input_surface_rect.x + 5, input_surface_rect.y))
 
@@ -867,26 +868,26 @@ def score():
             half_length = len(scores) // 2
             left_scores = scores[:half_length]
             right_scores = scores[half_length:]
-            left_position = 150
+            left_position = 130
             for name, score in left_scores:
-                score_text = pygame.font.Font(None, 38).render(f"{name}: {score}", True, (0, 0, 0))
+                score_text = pygame.font.Font(None, 40).render(f"{name}: {score}", True, (212, 239, 223))
                 score_rect = score_text.get_rect(topleft=(W // 4, left_position))
                 Fenetre.blit(score_text, score_rect)
-                left_position += 30
+                left_position += 40
 
-            right_position = 150
+            right_position = 130
             for name, score in right_scores:
-                score_text = pygame.font.Font(None, 38).render(f"{name}: {score}", True, (0, 0, 0))
+                score_text = pygame.font.Font(None, 40).render(f"{name}: {score}", True, (212, 239, 223))
                 score_rect = score_text.get_rect(topright=(3 * W // 4, right_position))
                 Fenetre.blit(score_text, score_rect)
-                right_position += 30
+                right_position += 40
         else:
-            y_position = 150
+            y_position = 130
             for name, score in scores:
-                score_text = pygame.font.Font(None, 38).render(f"{name}: {score}", True, (128, 139, 150))
-                score_rect = score_text.get_rect(center=(W // 2, y_position))
+                score_text = pygame.font.Font(None, 40).render(f"{name}: {score}", True, (212, 239, 223))
+                score_rect = score_text.get_rect(center=(W//2, y_position))
                 Fenetre.blit(score_text, score_rect)
-                y_position += 30
+                y_position += 40
 
         pygame.display.flip()
 
